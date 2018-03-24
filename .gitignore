@@ -23,3 +23,17 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+Snap.20180316.222420.4900.0003.trc
+Snap.20180316.222943.5372.0003.trc
+core.20180316.222420.4900.0001.dmp
+core.20180316.222943.5372.0001.dmp
+gradle/
+gradlew
+gradlew.bat
+javacore.20180316.222420.4900.0002.txt
+javacore.20180316.222943.5372.0002.txt
+jitdump.20180316.222420.4900.0004.dmp
+jitdump.20180316.222943.5372.0004.dmp
+out/
+src/main/resources/rebel.xml
+src/test/

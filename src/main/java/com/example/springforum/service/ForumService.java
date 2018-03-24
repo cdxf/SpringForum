@@ -1,9 +1,9 @@
 package com.example.springforum.service;
 
+import com.example.springforum.dto.ForumSummary;
+import com.example.springforum.dto.SubForumInfo;
 import com.example.springforum.entity.Forum;
 import com.example.springforum.entity.SiteDetail;
-import com.example.springforum.model.ForumSummary;
-import com.example.springforum.model.SubForumInfo;
 import com.example.springforum.repository.ForumRepository;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;

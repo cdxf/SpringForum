@@ -6,6 +6,7 @@ import com.example.springforum.entity.User;
 import com.example.springforum.service.ForumService;
 import com.example.springforum.service.SiteDetailService;
 import com.example.springforum.service.UserService;
+import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class Initialization {
     public void init() {
         System.out.println(siteDetailsService.getKey("sitename"));
         try {
-            Optional<User> add = userService.add(new User("s", "123456789", "snoobvn@gmail.com", "USER"));
+            val add = userService.add(new User("s", "123456789", "snoobvn@gmail.com", "USER"));
             logger.info("Saved User");
         }catch (DataAccessException e){
             System.out.println(e.getMessage());

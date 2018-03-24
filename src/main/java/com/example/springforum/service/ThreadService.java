@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Component
 public class ThreadService {
     @Autowired private ThreadRepository threadRepository;
@@ -27,6 +29,10 @@ public class ThreadService {
     }
     public Iterable<Thread> findNewestThread(Pageable page, Integer forumID){
         return threadRepository.findThreadsByForum_Id(forumID, page);
+    }
+
+    public Optional<Thread> getThread(Integer threadID) {
+        return threadRepository.findById(threadID);
     }
     public Thread getLastThread(Integer forumID){
         return threadRepository.findThreadByForumIdOrderByUpdatedTime(forumID);

@@ -1,13 +1,15 @@
 package com.example.springforum.entity;
 
+import org.springframework.lang.NonNull;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
 public class SiteDetail {
     @Id
-    private
-    String key;
+    @NonNull
+    private String key;
     public String getValue() {
         return value;
     }

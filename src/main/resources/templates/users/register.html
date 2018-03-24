@@ -6,14 +6,14 @@
         </div>
     </div>
     <hr>
-    <form action="#" th:action="@{/users/register}" th:object="${user}" method="post">
+    <form action="#" th:action="@{/register}" th:object="${user}" method="post">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <ul>
                     <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
-                    <li th:errors="*{username}">Name Error</li>
-                    <li th:errors="*{password}">Password Error</li>
-                    <li th:errors="*{email}">Email Error</li>
+                    <li th:each="err : ${#fields.errors('username')}" th:text="${err}"/>
+                    <li th:each="err : ${#fields.errors('password')}" th:text="${err}"/>
+                    <li th:each="err : ${#fields.errors('email')}" th:text="${err}"/>
                 </ul>
                 <hr>
             </div>
@@ -21,24 +21,26 @@
             <div class="col-md-8">
                 <div class="form-group">
                     <label for="username">Name: </label>
-                    <input class="form-control" type="text" id="username" th:field="*{username}" />
+                    <input class="form-control" type="text" th:autocomplete="username" id="username"
+                           th:field="*{username}"/>
                 </div>
                 <div class="form-group">
                     <label for="password">Password: </label>
-                    <input class="form-control" type="password" id="password" th:field="*{password}" />
+                    <input class="form-control" type="password" th:autocomplete="current-password" id="password"
+                           th:field="*{password}"/>
                 </div>
                 <div class="form-group">
                     <label for="email">Email: </label>
-                    <input class="form-control" id="email" type="text" th:field="*{email}" />
+                    <input class="form-control" id="email" th:autocomplete="email" type="text" th:field="*{email}"/>
                 </div>
                 <div class="form-group">
                     <button type="submit" value="Submit">Submit</button>
                     <button type="reset" value="Reset">Reset</button>
                 </div>
+            </div>
+        </div>
     </form>
-    </div>
-    </div>
-    </div>
+
 </template>
 
 </html>

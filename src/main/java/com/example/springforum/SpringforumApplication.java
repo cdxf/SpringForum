@@ -16,11 +16,8 @@ import java.util.Locale;
 @SpringBootApplication
 @EnableCaching
 public class SpringforumApplication{
-    @Bean
-    public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(new Locale("Vietnamese ","Vietnam "));
-        return slr;
+    public static void main(String[] args) {
+        SpringApplication.run(SpringforumApplication.class, args);
     }
     @Bean
     PasswordEncoder encoder(){
@@ -30,11 +27,13 @@ public class SpringforumApplication{
     Logger getLogger(){
         return LoggerFactory.getLogger("My App");
     }
-	public static void main(String[] args) {
-        SpringApplication.run(SpringforumApplication.class, args);
 
-	}
+    @Bean
+    public LocaleResolver localeResolver() {
+        SessionLocaleResolver slr = new SessionLocaleResolver();
+        slr.setDefaultLocale(new Locale("Vietnamese ", "Vietnam"));
+        return slr;
 
-
+    }
 }
 

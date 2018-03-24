@@ -35,8 +35,6 @@ public class MainController {
 
     @RequestMapping("/users/fun")
     public void test(@RequestParam(required = false) String title) {
-
-
     }
 
     @RequestMapping("/")

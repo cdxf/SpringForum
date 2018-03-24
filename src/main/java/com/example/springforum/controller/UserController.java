@@ -9,7 +9,6 @@ import com.example.springforum.spring.UserDetailImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -17,14 +16,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/users")
 public class UserController {
     @Autowired
     ThreadService threadService;
@@ -41,12 +38,7 @@ public class UserController {
         model.addAttribute("user", user);
         return "/users/profile";
     }
-    @RequestMapping("/hehe")
-    @ResponseBody
-    public Object hehe(Authentication auth, Model model) {
-        System.out.println(auth.getDetails());
-        return (User)auth.getPrincipal();
-    }
+
     @RequestMapping("/threads")
     @Secured("ROLE_USER")
     @ResponseBody
@@ -54,35 +46,24 @@ public class UserController {
         return threadService.findThreadsByAuthor(authorName);
     }
 
-    @RequestMapping
+    @RequestMapping("/userlist")
     public String index(@ModelAttribute("user_count") Long user_count, Model model) {
         return "users/index";
     }
 
     @GetMapping("/register")
     public String register(User user) {
-        System.out.println(user.username);
         return "users/register";
-
     }
-
-    @GetMapping("/add")
-    public String add(User user) {
-        System.out.println(user.username);
-        return "users/register";
-
-    }
-
 
     @PostMapping("/register")
-    public ModelAndView checkRegisterForm(@Valid User bindedUser, BindingResult bindingResult) {
+    public String checkRegisterForm(@Valid User bindedUser, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ModelAndView("/users/register");
+            return "/users/register";
         }
         if (userService.isExist(bindedUser.username)) {
-            ModelAndView modelAndView = new ModelAndView("/users/register");
             bindingResult.addError(new FieldError("user", "username", "Username already existed"));
-            return modelAndView;
+            return "/users/register";
         }
         Optional<User> optionalUser = userService.add(bindedUser);
         User user = optionalUser.orElseThrow(IllegalStateException::new);
@@ -91,6 +72,6 @@ public class UserController {
                 new UsernamePasswordAuthenticationToken(user.username, null, user.getAuthorities());
         auth.setDetails(userDetails);
         SecurityContextHolder.getContext().setAuthentication(auth);
-        return new ModelAndView("redirect:/users/profile");
+        return "redirect:/profile";
     }
 }

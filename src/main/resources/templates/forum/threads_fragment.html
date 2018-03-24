@@ -18,7 +18,7 @@
                             <tbody>
                             <tr th:each="thread,iter : ${bags.threads}">
                                 <td>
-                                    <a th:href="@{/forumdisplay(id=${bags.id})}" th:text="${thread.title}"></a>
+                                    <a th:href="@{/showthread(id=${thread.id})}" th:text="${thread.title}"></a>
                                 </td>
                                 <td th:text="${thread.author.username}"></td>
                                 <td th:text="${#temporals.format(thread.createdTime.toLocalDate())}"></td>

@@ -4,7 +4,7 @@
 <html xmlns:th="http://www.thymeleaf.org" th:include="fragments/index :: layout">
 <template th:fragment="content">
     <div class="row justify-content-center">
-    <form name="f" th:action="@{/login}" method="post">
+        <form name="login" th:action="@{/login}" method="post">
             <legend>Login:</legend>
             <div th:if="${param.error}" class="alert alert-error">
                 Invalid username and password.

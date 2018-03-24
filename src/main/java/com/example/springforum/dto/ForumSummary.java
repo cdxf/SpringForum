@@ -1,4 +1,4 @@
-package com.example.springforum.model;
+package com.example.springforum.dto;
 
 import com.example.springforum.entity.Forum;
 import com.example.springforum.entity.Thread;

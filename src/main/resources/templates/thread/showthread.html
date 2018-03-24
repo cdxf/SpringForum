@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:include="fragments/index :: layout">
+<th:block th:fragment="content">
+    <div class="row border">
+        <div class="col col-4 py-2 border-right" th:text="|Title: ${thread.title}| "></div>
+        <div class="col col-4 py-2" th:text="${#temporals.formatISO(thread.createdTime)}"></div>
+    </div>
+    <div class="row py-4 border border-top-0">
+        <div class="col" th:text="${thread.content}"></div>
+    </div>
+    <div th:each="comment : ${thread.comments}" class="row my-2 py-4 border">
+        <div class="col" th:text="${comment.content}"></div>
+    </div>
+    <div class="row my-2 py-4 bg-light">
+        <div class="col">
+            <form class="form" th:action="@{/newreply}" th:method="post">
+                <input type="hidden" th:name="thread" th:value="${thread.id}">
+                <div class="form-group">
+                    <textarea class="w-100" name="content" rows="5" id="content"></textarea>
+                </div>
+                <div class="form-group">
+                    <button th:type="submit" class="button">New Reply
+                    </button>
+                </div>
+            </form>
+        </div>
+    
+    </div>
+</th:block>
+</html>
