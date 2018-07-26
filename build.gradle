@@ -1,47 +1,74 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.0.RELEASE'
+        springBootVersion = '2.1.0.BUILD-SNAPSHOT'
+        querydslVersion = '4.2.1'
     }
     repositories {
-        maven { url 'https://repo.spring.io/libs-milestone' }
+        jcenter()
+        maven { url 'https://repo.spring.io/snapshot' }
+        maven { url 'https://repo.spring.io/milestone' }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+
     }
 }
-
+plugins {
+    id "net.ltgt.apt" version "0.17"
+    id "net.ltgt.apt-idea" version "0.17"
+}
 apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 9
-
-if (project.hasProperty('rebelAgent')) {
-    bootRun.jvmArgs += rebelAgent
-}
+sourceCompatibility = 10
 
 repositories {
     jcenter()
-    maven { url 'https://repo.spring.io/libs-milestone' }
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
 }
 
-
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
+//tasks.withType(JavaCompile) {
+//    options.incremental = true
+//}
+idea {
+    project {
+        // experimental: whether annotation processing will be configured in the IDE; only actually used with the 'idea' task.
+        configureAnnotationProcessing = true
+    }
+    module {
+        apt {
+            addGeneratedSourcesDirs = true
+            addAptDependencies = true
+        }
+    }
+}
+println "Gradle "+gradle.gradleVersion
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('javax.xml.bind:jaxb-api:2.3.0')
-    compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
-    compile('org.springframework.boot:spring-boot-starter-validation')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-undertow')
-    compile('org.springframework.boot:spring-boot-devtools')
-    runtime('org.postgresql:postgresql')
-    compileOnly('org.projectlombok:lombok:1.16.20')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    compile 'org.thymeleaf.extras:thymeleaf-extras-java8time'
-    // https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-springsecurity4
-    compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity4'
-    testCompile('org.springframework.security:spring-security-test')
+    implementation  'org.springframework.boot:spring-boot-starter-undertow'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation ("org.springframework.boot:spring-boot-starter-actuator")
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation  'org.hibernate:hibernate-core:5.3.2.Final'
+    implementation  'com.github.javafaker:javafaker:0.12'
+    implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
+    implementation  group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+    runtime 'org.postgresql:postgresql'
+    compileOnly 'org.projectlombok:lombok:1.18.0'
+    compileOnly "org.springframework.boot:spring-boot-configuration-processor"
+    annotationProcessor "org.projectlombok:lombok:1.18.0"
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.springframework.security:spring-security-test'
+    testCompileOnly 'org.projectlombok:lombok:1.18.0'
+
 }
