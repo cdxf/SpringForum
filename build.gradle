@@ -34,29 +34,17 @@ repositories {
 
 jooq {
     MyProject(sourceSets.main) {
-        jdbc {
-            driver = 'org.postgresql.Driver'
-            url = 'jdbc:postgresql://localhost:5432/forum'
-            user = 'postgres'
-            password = 'quang'
-            schema = 'public'
-            properties {
-                property {
-                    key = 'ssl'
-                    value = 'false'
-                }
-            }
-        }
         generator {
-
-            name = 'org.jooq.codegen.DefaultGenerator'
-            strategy {
-                name = 'org.jooq.codegen.DefaultGeneratorStrategy'
-                // ...
-            }
             database {
-                name = 'org.jooq.meta.postgres.PostgresDatabase'
+                name = 'org.jooq.meta.extensions.ddl.DDLDatabase'
+                properties {
+                    property {
+                        key = 'scripts'
+                        value = 'src/main/resources/database.sql'
+                    }
+                }
                 inputSchema = 'public'
+                outputSchema = ''
                 forcedTypes {
                     forcedType {
                         name = 'varchar'
@@ -98,9 +86,9 @@ configurations {
 }
 
 bootRun {
-    jvmArgs = ["-Xms25m", "-Xmx100m", "-XX:+UseG1GC", "-XX:+UseStringDeduplication",'-Xquickstart', "-noverify"]
+    jvmArgs = ["-Xms25m", "-Xmx100m", "-XX:+UseG1GC", "-XX:+UseStringDeduplication", '-Xquickstart', "-noverify"]
 }
-test{
+test {
 }
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-undertow'
