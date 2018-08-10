@@ -32,7 +32,6 @@ jitdump.20180316.222420.4900.0004.dmp
 jitdump.20180316.222943.5372.0004.dmp
 out/
 src/main/resources/rebel.xml
-src/test/
 .gradle/
 META-INF/
 bin/.gitignore
