@@ -1,3 +1,5 @@
 language: java
 jdk:
- - openjdk10
+ - openjdk10s
+script:
+ - jdk_switcher use openjdk10
