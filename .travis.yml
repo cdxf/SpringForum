@@ -4,7 +4,5 @@ jdk:
 before_install:
 - chmod +x gradlew
 - psql -c 'create database forum;' -U postgres
-script:
-- jdk_switcher use openjdk10
 services:
 - postgresql
