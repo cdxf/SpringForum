@@ -13,14 +13,15 @@ import com.springforum.user.User;
 import com.springforum.user.UserService;
 import com.springforum.user.dto.UserRegister;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +53,13 @@ public class Initialization implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         if (!sampleDB)
             return;
-        FileSystemResource classPathResource = new FileSystemResource("avatar");
-        File[] files = classPathResource.getFile().listFiles();
+        //for jar file
+        FileSystemResource fileSystemResource = new FileSystemResource("avatar");
+        // for classpth
+        ClassPathResource classPathResource = new ClassPathResource("avatar");
+        var files = ArrayUtils.addAll(classPathResource.getFile().listFiles(), fileSystemResource.getFile().listFiles());
         List<Integer> avatars = new ArrayList<>();
+        if (files.length == 0) throw new IllegalArgumentException("Can't found the avatar");
         for (var file : files) {
             try (var fileInputStream = new FileInputStream(file)) {
                 Integer integer = avatarService.addAvatar(fileInputStream.readAllBytes());
