@@ -101,7 +101,6 @@ bootRun {
     jvmArgs = ["-Xms25m", "-Xmx100m", "-XX:+UseG1GC", "-XX:+UseStringDeduplication",'-Xquickstart', "-noverify"]
 }
 test{
-    jvmArgs = ["-Xms25m", "-Xmx100m", "-XX:+UseG1GC", "-XX:+UseStringDeduplication","-noverify","-XX:TieredStopAtLevel=1"]
 }
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-undertow'
