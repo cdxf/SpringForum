@@ -42,3 +42,9 @@ gradlew.bat
 src/main/java/com/springforum/converter/
 src/main/java/com/springforum/event/
 src/main/java/com/springforum/spring/test/
+/.gradle/4.8.1/taskHistory/taskHistory.bin
+/.gradle/4.8.1/taskHistory/taskHistory.lock
+/.gradle/4.8.1/fileHashes/resourceHashesCache.bin
+/.gradle/4.8.1/fileHashes/fileHashes.lock
+/.gradle/4.8.1/fileHashes/fileHashes.bin
+/.gradle/buildOutputCleanup/buildOutputCleanup.lock
