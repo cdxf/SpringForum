@@ -33,3 +33,13 @@ jitdump.20180316.222943.5372.0004.dmp
 out/
 src/main/resources/rebel.xml
 src/test/
+.gradle/
+META-INF/
+bin/.gitignore
+generated/
+gradle/
+gradlew
+gradlew.bat
+src/main/java/com/springforum/converter/
+src/main/java/com/springforum/event/
+src/main/java/com/springforum/spring/test/
