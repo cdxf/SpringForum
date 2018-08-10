@@ -1,9 +1,11 @@
 package com.springforum.generic;
 
+import java.time.Instant;
+
 public interface IBaseEntity {
     Integer getId();
 
-    java.time.Instant getCreatedTime();
+    Instant getCreatedTime();
 
-    java.time.Instant getUpdatedTime();
+    Instant getUpdatedTime();
 }

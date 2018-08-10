@@ -1,8 +1,8 @@
 package com.springforum.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.springforum.user.UniqueEmail;
-import com.springforum.user.UniqueUsername;
+import com.springforum.user.validation.UniqueEmail;
+import com.springforum.user.validation.UniqueUsername;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -20,16 +19,16 @@ import javax.validation.constraints.Size;
 public class UserRegister {
     private Integer id;
     @Email
-    @NotNull
+    @NotBlank
     @UniqueEmail
     private String email;
-    @NotNull
+    @NotBlank
     @UniqueUsername
     private String username;
     @NotBlank()
-    @Size(min = 6, max = 128)
-    @NotNull
+    @Size(min = 4, max = 128)
+    @NotBlank
     @JsonIgnore
     private String password;
-    private String avatar;
+    private Integer avatar;
 }

@@ -1,41 +1,29 @@
 package com.springforum.thread;
 
-import com.springforum.thread.dto.ThreadBase;
-import com.springforum.thread.dto.ThreadWithContent;
+import com.springforum.forum.dto.ForumDTO;
+import com.springforum.thread.dto.ThreadDTO;
+import com.springforum.user.dto.UserSummary;
 
 public abstract class ThreadMaper {
-    public static ThreadBase threadToThreadBase(Thread value) {
-        ThreadBase build = ThreadBase.builder()
+    public static ThreadDTO threadDTOMapper(Thread value) {
+        return ThreadDTO.builder()
                 .id(value.getId())
-                .authorId(value.getAuthor().getId())
-                .authorName(value.getAuthor().getUsername())
-                .authorAvatar(value.getAuthor().getAvatar())
+                .author(UserSummary.builder()
+                        .username(value.getAuthor().getUsername())
+                        .id(value.getAuthor().getId())
+                        .avatar(value.getAuthor().getAvatar_id())
+                        .build())
                 .comments(value.getComments())
-                .forumId(value.getForum().getId())
-                .forumName(value.getForum().getName())
+                .forum(ForumDTO.builder()
+                        .id(value.getForum().getId())
+                        .name(value.getForum().getName())
+                        .description(value.getForum().getDescription())
+                        .build())
                 .title(value.getTitle())
+                .content(value.getContent())
                 .lastModified(value.getLastModified())
                 .createdTime(value.getCreatedTime())
                 .updatedTime(value.getUpdatedTime())
                 .views(value.getViews()).build();
-        return build;
-    }
-
-    public static ThreadWithContent threadsThreadWithContent(Thread value) {
-
-        ThreadWithContent build = ThreadWithContent.builder()
-                .id(value.getId())
-                .authorId(value.getAuthor().getId())
-                .authorName(value.getAuthor().getUsername())
-                .authorAvatar(value.getAuthor().getAvatar())
-                .comments(value.getComments())
-                .content(value.getContent())
-                .createdTime(value.getCreatedTime())
-                .updatedTime(value.getUpdatedTime())
-                .lastModified(value.getLastModified())
-                .title(value.getTitle())
-                .views(value.getViews())
-                .build();
-        return build;
     }
 }

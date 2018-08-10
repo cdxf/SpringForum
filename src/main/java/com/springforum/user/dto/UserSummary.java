@@ -1,31 +1,19 @@
 package com.springforum.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.Objects;
+import java.time.Instant;
 
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSummary implements UserSummaryProjection {
-    private Integer id;
-    private String username;
-    private String avatar;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserSummary that = (UserSummary) o;
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
-    }
+@Builder
+public class UserSummary {
+    public Integer id;
+    public String username;
+    public Integer avatar;
+    public Integer threads;
+    public Integer comments;
+    public Instant createdTime;
 }

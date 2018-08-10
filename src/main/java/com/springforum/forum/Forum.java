@@ -3,28 +3,29 @@ package com.springforum.forum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.springforum.generic.BaseEntity;
 import com.springforum.thread.Thread;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
-@Data
+@Setter
+@Getter
 @Table(indexes = {
         @Index(name = "latestThreadIndex", columnList = "latest_thread")
 })
 public class Forum extends BaseEntity {
-    private static Forum empty = new Forum("", "");
     @NotBlank
     private String name;
     @NotBlank
     private String description;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Forum parent;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "latest_thread")
-    private Thread latestThread;
+    private Thread latestThread = null;
     private Integer threads = 0;
     private Integer posts = 0;
 
@@ -42,13 +43,4 @@ public class Forum extends BaseEntity {
         this.description = description;
     }
 
-    public static Forum empty() {
-        return empty;
-    }
-
-    ;
-
-    public boolean isEmpty() {
-        return this.equals(empty());
-    }
 }

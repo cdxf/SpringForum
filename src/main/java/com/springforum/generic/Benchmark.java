@@ -7,15 +7,11 @@ import java.util.concurrent.Callable;
 @Slf4j
 public class Benchmark {
 
-    public static <T> T call(Callable<T> task) {
+    public static <T> T call(Callable<T> task) throws Exception {
         T call = null;
-        try {
             long startTime = System.currentTimeMillis();
             call = task.call();
             log.info((System.currentTimeMillis() - startTime) + "ms");
-        } catch (Exception e) {
-            //...
-        }
         return call;
     }
 }

@@ -2,7 +2,8 @@ package com.springforum.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.springforum.generic.BaseEntity;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.MapsId;
@@ -11,7 +12,8 @@ import java.io.Serializable;
 import java.time.Instant;
 
 @Entity
-@Data
+@Setter
+@Getter
 public class UserActivity extends BaseEntity implements Serializable {
     @OneToOne
     @MapsId

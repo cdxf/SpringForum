@@ -1,11 +1,14 @@
 package com.springforum.spring;
 
 import com.github.javafaker.Faker;
-import com.springforum.comment.CommentService;
+import com.springforum.avatar.AvatarService;
+import com.springforum.comment.create_comment.CreateCommentService;
 import com.springforum.forum.Forum;
 import com.springforum.forum.ForumService;
-import com.springforum.thread.ThreadService;
-import com.springforum.thread.dto.ThreadWithContent;
+import com.springforum.forum.create_new_forum.CreateForumService;
+import com.springforum.thread.ThreadWriteService;
+import com.springforum.thread.create_new_thread.CreateThreadService;
+import com.springforum.thread.dto.ThreadDTO;
 import com.springforum.user.User;
 import com.springforum.user.UserService;
 import com.springforum.user.dto.UserRegister;
@@ -13,9 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,35 +30,44 @@ import java.util.Random;
 @Component
 @Slf4j
 public class Initialization implements InitializingBean {
-    private final UserService userService;
-    private final ForumService forumService;
-    private final ThreadService threadService;
-    private final CommentService commentService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    ForumService forumService;
+    @Autowired
+    CreateForumService createForumService;
+    @Autowired
+    ThreadWriteService threadWriteService;
+    @Autowired
+    CreateThreadService createThreadService;
+    @Autowired
+    CreateCommentService commentService;
+    @Autowired
+    AvatarService avatarService;
     @Value("${springforum.sampleDB}")
     Boolean sampleDB;
-
-    @Autowired
-    public Initialization(UserService userService, ForumService forumService, ThreadService threadService, CommentService commentService) {
-        this.userService = userService;
-        this.forumService = forumService;
-        this.threadService = threadService;
-        this.commentService = commentService;
-    }
+    Random rand = new Random(System.currentTimeMillis());
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (!sampleDB) return;
+        if (!sampleDB)
+            return;
+        FileSystemResource classPathResource = new FileSystemResource("avatar");
+        File[] files = classPathResource.getFile().listFiles();
+        List<Integer> avatars = new ArrayList<>();
+        for (var file : files) {
+            try (var fileInputStream = new FileInputStream(file)) {
+                Integer integer = avatarService.addAvatar(fileInputStream.readAllBytes());
+                avatars.add(integer);
+            }
+        }
         var username = "snoob";
-        User user = null;
         try {
+            User user = null;
             Optional<User> getUser = userService.getByUsername(username);
             if (!getUser.isPresent()) {
-                UserRegister userRegister = UserRegister.builder()
-                        .username(username)
-                        .password("123456789")
-                        .email("snoobvn@gmail.com")
-                        .avatar("Simpsons_-_Grampa.jpg")
-                        .build();
+                UserRegister userRegister = UserRegister.builder().username(username).password("123456789")
+                        .email("snoobvn@gmail.com").avatar(avatars.get(0)).build();
                 userService.newUser(userRegister);
                 log.info("Saved User");
             }
@@ -61,18 +76,15 @@ public class Initialization implements InitializingBean {
             log.error(e.getMessage());
         }
         Faker faker = new Faker();
-        //Random users
+        // Random users
         List<Integer> userIDs = new ArrayList<>();
         List<Thread> threadList = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             threadList.add(new Thread(() -> {
-                for (int j = 0; j < 125; j++) {
-                    UserRegister userRegister = UserRegister.builder()
-                            .username(faker.lorem().characters(20))
-                            .password("123456789")
-                            .email(faker.lorem().characters(33).replace(" ", "") + "@gmail.com")
-                            .avatar("Simpsons_-_Grampa.jpg")
-                            .build();
+                for (int j = 0; j < 10; j++) {
+                    UserRegister userRegister = UserRegister.builder().username(faker.lorem().characters(20))
+                            .password("123456789").avatar(avatars.get(rand.nextInt(avatars.size())))
+                            .email(faker.lorem().characters(33).replace(" ", "") + "@gmail.com").build();
                     userIDs.add(userService.newUser(userRegister).getId());
                 }
             }));
@@ -81,40 +93,54 @@ public class Initialization implements InitializingBean {
         for (Thread t : threadList) {
             t.join();
         }
-        if (forumService.getRootForum().iterator().hasNext()) return;
-        var rand = new Random(System.currentTimeMillis());
+        if (forumService.getForums().iterator().hasNext())
+            return;
+
         for (int x = 0; x < rand.nextInt(5) + 5; x++) {
-            Forum root = forumService
-                    .add(faker.book().genre(), faker.cat().name(), null).orElseThrow();
+            Forum root = createForumService.newForum(faker.book().genre(), faker.cat().name(), null).orElseThrow();
             for (int j = 0; j < rand.nextInt(5) + 3; j++) {
-                Forum add = forumService
-                        .add(faker.book().publisher(), faker.book().author(), root.getId())
+                Forum add = createForumService.newForum(faker.book().publisher(), faker.book().author(), root.getId())
                         .orElseThrow();
-                ThreadWithContent thread = threadService.newThread(faker.lorem().sentence(rand.nextInt(10) + 10), faker.lorem().paragraph(20), root.getId(), userIDs.get(rand.nextInt(999) + 1));
+                ThreadDTO thread = createThreadService.newThread(faker.lorem().sentence(rand.nextInt(10) + 10),
+                        faker.lorem().paragraph(20), root.getId(), userIDs.get(rand.nextInt(userIDs.size())));
                 var contents1 = new ArrayList<String>();
                 var userIDs1 = new ArrayList<Integer>();
                 var titleForThreads = new ArrayList<String>();
                 var contentForThreads = new ArrayList<String>();
                 var userIdForThreads = new ArrayList<Integer>();
                 var forum = add.getId();
-                for (int k = 0; k < rand.nextInt(200) + 5; k++) {
+                for (int k = 0; k < rand.nextInt(20) + 5; k++) {
+                    if (Math.random() < 0.05) {
+                        Forum subforum = createForumService
+                                .newForum(faker.book().publisher(), faker.book().author(), add.getId()).orElseThrow();
+                    }
                     titleForThreads.add(faker.lorem().sentence(rand.nextInt(10) + 10));
-                    contentForThreads.add(faker.lorem().paragraph(20));
+                    contentForThreads.add(faker.lorem().paragraph(rand.nextInt(100) + 2));
                     userIdForThreads.add(userIDs.get(rand.nextInt(userIDs.size())));
                 }
-                List<ThreadWithContent> threadWithContents = threadService.newMultipleThread(titleForThreads, contentForThreads, forum, userIdForThreads);
+                List<ThreadDTO> threadWithContents = createThreadService.newMultipleThread(titleForThreads,
+                        contentForThreads, forum, userIdForThreads);
                 for (int k = 0; k < threadWithContents.size(); k++) {
                     var contents2 = new ArrayList<String>();
                     var userIDs2 = new ArrayList<Integer>();
-                    for (int y = 0; y < rand.nextInt(50) + 5; y++) {
-                        contents1.add(faker.lorem().paragraph(20));
-                        contents2.add(faker.lorem().paragraph(20));
+                    for (int y = 0; y < rand.nextInt(20) + 5; y++) {
+                        contents1.add(faker.lorem().paragraph(rand.nextInt(100) + 1));
+                        contents2.add(faker.lorem().paragraph(rand.nextInt(100) + 1));
                         userIDs1.add(userIDs.get(rand.nextInt(userIDs.size())));
                         userIDs2.add(userIDs.get(rand.nextInt(userIDs.size())));
                     }
-                    commentService.postMultipleComment(threadWithContents.get(k).getId(), contents2, userIDs2);
+                    commentService.createMultipleComments(threadWithContents.get(k).getId(), contents2, userIDs2);
                 }
-                commentService.postMultipleComment(thread.getId(), contents1, userIDs1);
+                titleForThreads.clear();
+                contentForThreads.clear();
+                userIdForThreads.clear();
+                for (int k = 0; k < rand.nextInt(25) + 10; k++) {
+                    titleForThreads.add(faker.lorem().sentence(rand.nextInt(10) + 10));
+                    contentForThreads.add(faker.lorem().paragraph(rand.nextInt(100) + 2));
+                    userIdForThreads.add(userIDs.get(rand.nextInt(userIDs.size())));
+                }
+                createThreadService.newMultipleThread(titleForThreads, contentForThreads, forum, userIdForThreads);
+                commentService.createMultipleComments(thread.getId(), contents1, userIDs1);
             }
         }
         log.info("Saved Forum");

@@ -1,8 +1,13 @@
 package com.springforum.user;
 
+import com.springforum.Avatar;
+import com.springforum.avatar.AvatarService;
 import com.springforum.user.dto.UserRegister;
 import com.springforum.user.dto.UserSummary;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,28 +17,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Validator;
+import javax.persistence.EntityManager;
+import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
-@Service
+@Service(value = "userService")
 @Transactional(readOnly = true)
+@Getter
+@Setter
 public class UserService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    @Autowired
-    private Validator validator;
-    @Autowired
-    private UserMapper userMapper;
+    @Autowired private EntityManager entityManager;
+    @Autowired private UserRepository userRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
+    @Autowired private AvatarService avatarService;
     public Optional<User> getByUsername(String username) {
         Optional<User> byUsername = userRepository.getByUsername(username);
         return byUsername;
@@ -51,10 +50,9 @@ public class UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
             var auth = (UsernamePasswordAuthenticationToken) authentication;
-
             return (User) auth.getPrincipal();
         }
-        throw new BadCredentialsException("");
+        throw new BadCredentialsException(authentication.getClass().getName());
     }
 
     public Boolean isExist(String username) {
@@ -62,18 +60,22 @@ public class UserService {
     }
 
     @Transactional
-    public UserSummary newUser(UserRegister userRegister) {
-        User user = userMapper.userRegisterToUser(userRegister);
+    public UserSummary newUser(@Valid UserRegister userRegister) {
+        Avatar reference = entityManager.getReference(Avatar.class, userRegister.getAvatar());
+        User user = UserMapper.userRegisterToUser(userRegister);
+        user.setComments(0);
+        user.setThreads(0);
+        user.setAvatar(reference);
         user.setPassword(passwordEncoder.encode(userRegister.getPassword()));
         user.setRole(List.of(User.ROLE.USER));
         UserActivity userActivity = new UserActivity();
         userActivity.setLastThreadCreation(Instant.ofEpochMilli(0));
         userActivity.setUser(user);
         User save = userRepository.save(user);
-        return userMapper.userToUserSummary(save);
+        return UserMapper.userToUserSummary(save);
     }
 
-    public Iterable<User> getTopUsers() {
+    public Page<User> getTopUsers() {
         return userRepository.findAll(PageRequest.of(0, 100));
     }
 
@@ -99,7 +101,4 @@ public class UserService {
         return userRepository.count();
     }
 
-    public List<UserSummary> findAllById(Set<Integer> id) {
-        return userRepository.findAllByIdIn(id);
-    }
 }

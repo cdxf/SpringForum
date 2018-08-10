@@ -1,45 +1,31 @@
 package com.springforum.forum;
 
-import com.springforum.forum.dto.ForumBase;
-import com.springforum.forum.dto.ForumCreatePayload;
+import com.springforum.forum.dto.ForumDTO;
 import com.springforum.generic.Benchmark;
-import com.springforum.generic.PathItemDTO;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j
-@RequestMapping("/api/forums")
+@Getter
+@Setter
+@RequestMapping("/api")
 public class ForumAPI {
-    private final ForumService forumService;
-
     @Autowired
-    public ForumAPI(ForumService forumService) {
-        this.forumService = forumService;
-    }
+    private ForumService forumService;
 
-    @GetMapping
-    public Iterable<ForumBase> getForums() {
+    @GetMapping("forums")
+    public Iterable<ForumDTO> all() throws Exception {
         return Benchmark.call(forumService::getForums);
     }
 
-    @GetMapping("/path/{id}")
-    public Iterable<PathItemDTO> getPath(@PathVariable("id") Integer id) {
-        return forumService.getPath(id);
-    }
 
-    @GetMapping("/{id}")
-    public ForumBase getForum(@PathVariable("id") Integer id) {
+    @GetMapping("forums/{id}")
+    public ForumDTO getForum(@PathVariable("id") Integer id) throws Exception {
         return Benchmark.call(() -> forumService.getForumDTO(id));
-    }
-
-    @PostMapping
-    public Optional<ForumBase> create(@RequestBody ForumCreatePayload payload) {
-        return forumService
-                .add(payload.getName(), payload.getDescription(), payload.getParentForumId())
-                .map(ForumMaper::forumToForumBase);
     }
 }

@@ -1,9 +1,11 @@
 package com.springforum.thread.event;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 
-@Data
+@Setter
+@Getter
 public class onThreadView extends ApplicationEvent {
     private Integer threadId;
 

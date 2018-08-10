@@ -4,8 +4,11 @@ import com.springforum.comment.Comment;
 import com.springforum.forum.Forum;
 import com.springforum.generic.BaseEntity;
 import com.springforum.user.User;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -20,13 +23,16 @@ import static javax.persistence.FetchType.LAZY;
         @Index(name = "thread_author_id", columnList = "author_id"),
         @Index(name = "thread_forum_id", columnList = "forum_id"),
 })
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Thread extends BaseEntity {
-    private static Thread empty = new Thread("", "", Forum.empty(), User.empty());
     @NotBlank
     private String title;
-    @Lob
+    @Column(length = 10485760)
+    @NotBlank
+    @Length(min = 20)
     private String content;
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "forum_id")
@@ -40,10 +46,10 @@ public class Thread extends BaseEntity {
     private Integer views;
     @Column(name = "last_modified")
     private Instant lastModified;
-    @OneToOne
+    @OneToOne(fetch = LAZY)
     private Comment lastReply;
 
-    public Thread(String title, String content, Forum forum, User author) {
+    public Thread(String title, String content, @NotNull Forum forum, @NotNull User author) {
         this.title = title;
         this.content = content;
         this.forum = forum;
@@ -53,10 +59,6 @@ public class Thread extends BaseEntity {
         this.lastModified = Instant.now();
     }
 
-    public static Thread empty() {
-        return empty;
-    }
-
     @PrePersist
     public void updateLatestThread() {
         Forum nextForum = this.forum;
@@ -64,9 +66,5 @@ public class Thread extends BaseEntity {
             nextForum.setLatestThread(this);
             nextForum = nextForum.getParent();
         }
-    }
-
-    public boolean isEmpty() {
-        return this.equals(empty());
     }
 }

@@ -1,7 +1,6 @@
 buildscript {
     ext {
         springBootVersion = '2.1.0.BUILD-SNAPSHOT'
-        querydslVersion = '4.2.1'
     }
     repositories {
         jcenter()
@@ -10,21 +9,22 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-
+        classpath 'org.postgresql:postgresql:42.2.4'
     }
 }
 plugins {
-    id "net.ltgt.apt" version "0.17"
-    id "net.ltgt.apt-idea" version "0.17"
+    //  id "net.ltgt.apt" version "0.17"
+//    id "net.ltgt.apt-idea" version "0.17"
+    id 'nu.studer.jooq' version '3.0.1'
+    id 'io.franzbecker.gradle-lombok' version '1.14'
 }
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 10
+targetCompatibility = 10
 
 repositories {
     jcenter()
@@ -32,43 +32,98 @@ repositories {
     maven { url "https://repo.spring.io/milestone" }
 }
 
-configurations {
-    compile.exclude module: "spring-boot-starter-tomcat"
-}
-//tasks.withType(JavaCompile) {
-//    options.incremental = true
-//}
-idea {
-    project {
-        // experimental: whether annotation processing will be configured in the IDE; only actually used with the 'idea' task.
-        configureAnnotationProcessing = true
-    }
-    module {
-        apt {
-            addGeneratedSourcesDirs = true
-            addAptDependencies = true
+jooq {
+    MyProject(sourceSets.main) {
+        jdbc {
+            driver = 'org.postgresql.Driver'
+            url = 'jdbc:postgresql://localhost:5432/forum'
+            user = 'postgres'
+            password = 'quang'
+            schema = 'public'
+            properties {
+                property {
+                    key = 'ssl'
+                    value = 'false'
+                }
+            }
+        }
+        generator {
+
+            name = 'org.jooq.codegen.DefaultGenerator'
+            strategy {
+                name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+                // ...
+            }
+            database {
+                name = 'org.jooq.meta.postgres.PostgresDatabase'
+                inputSchema = 'public'
+                forcedTypes {
+                    forcedType {
+                        name = 'varchar'
+                        expression = '.*'
+                        types = 'JSONB?'
+                    }
+                    forcedType {
+                        name = 'varchar'
+                        expression = '.*'
+                        types = 'INET'
+                    }
+                }
+            }
+            generate {
+                relations = true
+                springAnnotations = true
+                deprecated = false
+                fluentSetters = true
+                // ...
+            }
+            target {
+                packageName = 'com.springforum'
+            }
         }
     }
 }
-println "Gradle "+gradle.gradleVersion
+lombok {
+    version = '1.18.2'
+    sha256 = ""
+}
+
+tasks.generateMyProjectJooqSchemaSource.with {
+    javaExecSpec = { JavaExecSpec s ->
+        s.jvmArgs '--add-modules', 'java.xml.bind'
+    }
+}
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
+
+bootRun {
+    jvmArgs = ["-Xms25m", "-Xmx100m", "-XX:+UseG1GC", "-XX:+UseStringDeduplication",'-Xquickstart', "-noverify"]
+}
+test{
+    jvmArgs = ["-Xms25m", "-Xmx100m", "-XX:+UseG1GC", "-XX:+UseStringDeduplication","-noverify","-XX:TieredStopAtLevel=1"]
+}
 dependencies {
-    implementation  'org.springframework.boot:spring-boot-starter-undertow'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation ("org.springframework.boot:spring-boot-starter-actuator")
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-devtools'
-    implementation  'org.hibernate:hibernate-core:5.3.2.Final'
-    implementation  'com.github.javafaker:javafaker:0.12'
-    implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
-    implementation  group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+    compile 'org.springframework.boot:spring-boot-starter-undertow'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.springframework.boot:spring-boot-starter-jooq'
+    compile 'org.springframework.boot:spring-boot-starter-validation'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'org.hibernate:hibernate-core:5.3.2.Final'
+    compile 'org.zalando:problem-spring-web:0.23.0'
+    compile 'com.github.javafaker:javafaker:0.12'
+    compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
     runtime 'org.postgresql:postgresql'
-    compileOnly 'org.projectlombok:lombok:1.18.0'
     compileOnly "org.springframework.boot:spring-boot-configuration-processor"
-    annotationProcessor "org.projectlombok:lombok:1.18.0"
+    //annotationProcessor "org.projectlombok:lombok:1.18.2"
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.assertj:assertj-core:3.6.2'
     testCompile 'org.springframework.security:spring-security-test'
     testCompileOnly 'org.projectlombok:lombok:1.18.0'
-
+    jooqRuntime 'org.jooq:jooq-meta-extensions:3.11.3'
+    jooqRuntime("org.hibernate:hibernate-core:5.3.3.Final")
+    jooqRuntime 'org.postgresql:postgresql'
 }

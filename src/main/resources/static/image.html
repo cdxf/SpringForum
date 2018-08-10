@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script type="text/javascript">
+    function loadImageFileAsURL(e) {
+        var filesSelected = document.getElementById("fileToUpload").files;
+        console.log(filesSelected);
+        if (filesSelected.length > 0) {
+            const fileToLoad = filesSelected[0];
+            console.log(fileToLoad);
+            const fileReader = new FileReader();
+            const s = fileReader.readAsDataURL(fileToLoad);
+            fileReader.onload = () => {
+                console.log(fileReader.result);
+                document.getElementById("base64").setAttribute("value", fileReader.result);
+                document.getElementById("form").submit();
+            };
+        }
+        return false;
+    }
+
+</script>
+<input type="file" name="fileToUpload" id="fileToUpload">
+<form action="/file" method="post" enctype="application/x-www-form-urlencoded" id="form">
+    <input type="text" name="file" id="base64">
+    <input type="button" value="Submit" onclick="loadImageFileAsURL()">
+</form>
+</body>
+</html>

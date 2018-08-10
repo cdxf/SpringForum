@@ -1,6 +1,5 @@
 package com.springforum.spring;
 
-import com.springforum.exception.UserNotExistException;
 import com.springforum.user.User;
 import com.springforum.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userService.getByUsername(username).orElseThrow(UserNotExistException::new);
+        var user = userService.getByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
         return user;
     }
 }

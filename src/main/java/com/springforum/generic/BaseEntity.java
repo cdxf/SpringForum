@@ -1,29 +1,27 @@
 package com.springforum.generic;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.time.Instant;
 
 @MappedSuperclass
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
 public class BaseEntity implements IBaseEntity {
     @Id
-    @GeneratedValue
-    private Integer id = -1;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence")
+    @SequenceGenerator(name = "sequence", sequenceName = "sequence")
+    private Integer id;
     @CreationTimestamp
     @Column(name = "created_time")
-    private Instant createdTime = Instant.EPOCH;
+    private Instant createdTime;
     @UpdateTimestamp
     @Column(name = "updated_time")
-    private Instant updatedTime = Instant.EPOCH;
+    private Instant updatedTime;
 }

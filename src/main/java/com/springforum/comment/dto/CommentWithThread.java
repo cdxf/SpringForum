@@ -1,27 +1,21 @@
 package com.springforum.comment.dto;
 
-import com.springforum.forum.dto.IdOnly;
-import com.springforum.generic.BaseEntity;
-import lombok.AllArgsConstructor;
+import com.springforum.thread.dto.ThreadDTO;
+import com.springforum.user.dto.UserSummary;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class CommentWithThread extends BaseEntity {
-    public IdOnly thread;
+@Builder
+@Getter
+@Setter
+public class CommentWithThread {
+    public Integer id;
+    public Instant updatedTime;
+    public Instant createdTime;
+    public ThreadDTO thread;
     private String content;
-    private IdOnly author;
-
-    @Builder
-    public CommentWithThread(Integer id, Instant createdTime, Instant updatedTime, String content, Integer author, Integer thread) {
-        super(id, createdTime, updatedTime);
-        this.content = content;
-        this.author = new IdOnly(author);
-        this.thread = new IdOnly(thread);
-    }
+    private UserSummary author;
 }
