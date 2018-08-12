@@ -34,7 +34,6 @@ out/
 src/main/resources/rebel.xml
 .gradle/
 META-INF/
-bin/.gitignore
 generated/
 gradle/
 gradlew
@@ -42,9 +41,9 @@ gradlew.bat
 src/main/java/com/springforum/converter/
 src/main/java/com/springforum/event/
 src/main/java/com/springforum/spring/test/
-/.gradle/4.8.1/taskHistory/taskHistory.bin
-/.gradle/4.8.1/taskHistory/taskHistory.lock
-/.gradle/4.8.1/fileHashes/resourceHashesCache.bin
-/.gradle/4.8.1/fileHashes/fileHashes.lock
-/.gradle/4.8.1/fileHashes/fileHashes.bin
-/.gradle/buildOutputCleanup/buildOutputCleanup.lock
+Dockerfile
+core.20180810.161359.8680.0001.dmp
+core.20180810.223805.580.0001.dmp
+core.20180810.223806.9908.0001.dmp
+src/test/resources/logback-test.xml
+src/test/resources/static/
