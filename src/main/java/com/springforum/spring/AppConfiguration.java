@@ -22,7 +22,6 @@ public class AppConfiguration {
 
     @PostConstruct
     public void config() {
-        System.out.println("Config DSLContext");
         context.settings().setRenderKeywordStyle(RenderKeywordStyle.AS_IS);
         context.settings().setRenderNameStyle(RenderNameStyle.AS_IS);
     }

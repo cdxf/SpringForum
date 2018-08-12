@@ -1,20 +1,21 @@
 package com.springforum.page_hits;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
 @Entity
 @Table(indexes = {@Index(name = "createdTimeIndex", columnList = "created_time")})
 @Setter
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class PageHits {
-    final private String ip;
+    @NotNull private String ip;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence")
     @SequenceGenerator(name = "sequence", sequenceName = "sequence")
