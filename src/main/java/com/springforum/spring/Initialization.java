@@ -17,14 +17,13 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,30 +56,30 @@ public class Initialization implements InitializingBean {
             return;
         //for jar file
         FileSystemResource fileSystemResource = new FileSystemResource("static/avatar");
+        var files = fileSystemResource.getFile().listFiles();
+        var size = files == null ? 0 : files.length;
+        InputStream[] fileInputStreams = new InputStream[size];
+        for (int i = 0; i < size; i++) {
+            fileInputStreams[i] = new FileInputStream(files[i]);
+        }
         // for classpth
-        ClassPathResource classPathResource = new ClassPathResource("avatar");
-        File[] classPath_File;
-        try {
-            classPath_File = classPathResource.getFile().listFiles();
-        } catch (IOException e) {
-            classPath_File = new File[0];
+        var pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
+        var resources = pathMatchingResourcePatternResolver.getResources("static/avatar/**");
+        var resources2 = pathMatchingResourcePatternResolver.getResources("static/avatar/**");
+        var resourcesAll = ArrayUtils.addAll(resources, resources2);
+        InputStream[] classPathInputStream = new InputStream[resourcesAll.length];
+        for (int i = 0; i < resourcesAll.length; i++) {
+            classPathInputStream[i] = resourcesAll[i].getInputStream();
         }
-        ClassPathResource classPathResource2 = new ClassPathResource("static/avatar");
-        File[] classPath_File2;
-        try {
-            classPath_File2 = classPathResource2.getFile().listFiles();
-        } catch (IOException e) {
-            classPath_File2 = new File[0];
-        }
-
-        var files = ArrayUtils.addAll(classPath_File, classPath_File2);
-        files = ArrayUtils.addAll(fileSystemResource.getFile().listFiles(), files);
+        var inputStreams = ArrayUtils.addAll(fileInputStreams, classPathInputStream);
         List<Integer> avatars = new ArrayList<>();
-        if (files.length == 0) throw new IllegalArgumentException("Can't found the avatar");
-        for (var file : files) {
-            try (var fileInputStream = new FileInputStream(file)) {
-                Integer integer = avatarService.addAvatar(fileInputStream.readAllBytes());
+        if (inputStreams.length == 0) throw new IllegalArgumentException("Can't found the avatar");
+        for (var file : inputStreams) {
+            try {
+                Integer integer = avatarService.addAvatar(file.readAllBytes());
                 avatars.add(integer);
+            } catch (Exception e) {
+                log.error("Can't read avatar file");
             }
         }
         var username = "snoob";
