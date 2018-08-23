@@ -58,15 +58,23 @@ public class Initialization implements InitializingBean {
         //for jar file
         FileSystemResource fileSystemResource = new FileSystemResource("static/avatar");
         // for classpth
-        ClassPathResource classPathResource = new ClassPathResource("static/avatar");
+        ClassPathResource classPathResource = new ClassPathResource("avatar");
         File[] classPath_File;
         try {
             classPath_File = classPathResource.getFile().listFiles();
         } catch (IOException e) {
             classPath_File = new File[0];
         }
+        ClassPathResource classPathResource2 = new ClassPathResource("static/avatar");
+        File[] classPath_File2;
+        try {
+            classPath_File2 = classPathResource2.getFile().listFiles();
+        } catch (IOException e) {
+            classPath_File2 = new File[0];
+        }
 
-        var files = ArrayUtils.addAll(classPath_File, fileSystemResource.getFile().listFiles());
+        var files = ArrayUtils.addAll(classPath_File, classPath_File2);
+        files = ArrayUtils.addAll(fileSystemResource.getFile().listFiles(), files);
         List<Integer> avatars = new ArrayList<>();
         if (files.length == 0) throw new IllegalArgumentException("Can't found the avatar");
         for (var file : files) {
