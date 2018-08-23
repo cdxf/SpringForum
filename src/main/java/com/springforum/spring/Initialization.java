@@ -56,9 +56,9 @@ public class Initialization implements InitializingBean {
         if (!sampleDB)
             return;
         //for jar file
-        FileSystemResource fileSystemResource = new FileSystemResource("avatar");
+        FileSystemResource fileSystemResource = new FileSystemResource("static/avatar");
         // for classpth
-        ClassPathResource classPathResource = new ClassPathResource("avatar");
+        ClassPathResource classPathResource = new ClassPathResource("static/avatar");
         File[] classPath_File;
         try {
             classPath_File = classPathResource.getFile().listFiles();
