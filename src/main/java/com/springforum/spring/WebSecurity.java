@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -63,10 +62,7 @@ class WebSecurity extends WebSecurityConfigurerAdapter {
         http
                 .cors().
                 configurationSource(corsConfigurationSource()).and()
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository
-                        .withHttpOnlyFalse())
-                .and()
+                .csrf().disable()
                 .authorizeRequests()
                 .anyRequest().permitAll()
                 .and()
