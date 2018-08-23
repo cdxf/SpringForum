@@ -82,13 +82,13 @@ public class Initialization implements InitializingBean {
                 log.error("Can't read avatar file");
             }
         }
-        var username = "snoob";
+        var username = "Anonymous";
         try {
             User user = null;
             Optional<User> getUser = userService.getByUsername(username);
             if (!getUser.isPresent()) {
-                UserRegister userRegister = UserRegister.builder().username(username).password("123456789")
-                        .email("snoobvn@gmail.com").avatar(avatars.get(0)).build();
+                UserRegister userRegister = UserRegister.builder().username(username).password("Anonymous")
+                        .email("anonymous@gmail.com").avatar(avatars.get(0)).build();
                 userService.newUser(userRegister);
                 log.info("Saved User");
             }
