@@ -35,9 +35,6 @@ src/main/resources/rebel.xml
 .gradle/
 META-INF/
 generated/
-gradle/
-gradlew
-gradlew.bat
 src/main/java/com/springforum/converter/
 src/main/java/com/springforum/event/
 src/main/java/com/springforum/spring/test/
