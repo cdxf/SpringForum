@@ -7,10 +7,12 @@ import com.springforum.thread.dto.ThreadDTO;
 import com.springforum.user.dto.UserSummary;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.List;
 
 @Repository("threadDao")
@@ -30,6 +32,25 @@ public class ThreadDAO extends ThreadMeta {
                 .execute();
     }
 
+    public ThreadDTO mapper(Record record) {
+        return ThreadDTO.builder()
+                .id(record.get(thread.ID))
+                .forum(ForumDTO.builder()
+                        .id(record.get(forum.ID))
+                        .build())
+                .author(UserSummary.builder()
+                        .id(record.get(author.ID))
+                        .username(record.get(author.USERNAME))
+                        .avatar(record.get(author.AVATAR_ID))
+                        .build())
+                .title(record.get(thread.TITLE))
+                .views(record.get(thread.VIEWS))
+                .comments(record.get(thread.COMMENTS))
+                .createdTime(record.get(thread.CREATED_TIME).toInstant())
+                .lastModified(record.get(thread.LAST_MODIFIED).toInstant())
+                .content(record.get(thread.CONTENT))
+                .build();
+    }
     public ThreadDTO findById(Integer id) {
         return create.select().from(thread)
                 .innerJoin(author).on(author.ID.eq(thread.AUTHOR_ID))
@@ -113,4 +134,16 @@ public class ThreadDAO extends ThreadMeta {
                         .build());
     }
 
+    public List<Instant> getRange(Integer forumId) {
+        var query = create.select(thread.LAST_MODIFIED)
+                .from(thread)
+                .where(thread.FORUM_ID.eq(forumId))
+                .orderBy(thread.LAST_MODIFIED.asc())
+                .limit(1)
+                .unionAll(
+                        create.select(thread.LAST_MODIFIED).from(thread)
+                                .where(thread.FORUM_ID.eq(forumId))
+                                .orderBy(thread.LAST_MODIFIED.desc()).limit(1));
+        return query.fetch().map(record -> record.get(thread.LAST_MODIFIED).toInstant());
+    }
 }

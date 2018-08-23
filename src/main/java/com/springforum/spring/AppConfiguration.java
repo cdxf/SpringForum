@@ -29,7 +29,6 @@ public class AppConfiguration {
     @Bean
     TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setQueueCapacity(0);
         threadPoolTaskExecutor.setMaxPoolSize(4);
         return threadPoolTaskExecutor;
     }

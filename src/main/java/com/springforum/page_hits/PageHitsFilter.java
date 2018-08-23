@@ -9,8 +9,6 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import java.io.IOException;
 
-import static java.lang.System.out;
-
 @Component
 @WebFilter("/*")
 @Slf4j
@@ -27,8 +25,6 @@ public class PageHitsFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         pageHitsDao.increasePageHit(req.getRemoteAddr());
-        //System.out.println(pageHitsDao.getUsersOnline());
-        out.println("filter Thread: " + Thread.currentThread().getName());
         chain.doFilter(req, resp);
     }
 

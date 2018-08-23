@@ -12,6 +12,7 @@ import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 
 @Repository("getLatestThreadDao")
@@ -50,6 +51,18 @@ public class GetLatestThreadDao extends ThreadMeta {
                 .lastModified(record.get(thread.LAST_MODIFIED).toInstant())
                 .content(record.get(thread.CONTENT))
                 .build();
+    }
+
+    public List<Instant> getRange() {
+        var query = create.select(thread.LAST_MODIFIED)
+                .from(thread)
+                .orderBy(thread.LAST_MODIFIED.asc())
+                .limit(1)
+                .unionAll(
+                        create.select(thread.LAST_MODIFIED).from(thread)
+                                .orderBy(thread.LAST_MODIFIED.desc()).limit(1));
+        log.debug(query.getSQL());
+        return query.fetch().map(record -> record.get(thread.LAST_MODIFIED).toInstant());
     }
 
     public List<ThreadDTO> query(TimestampKeyset timestampKeyset) {

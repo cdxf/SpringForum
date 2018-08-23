@@ -37,5 +37,4 @@ public class CommentAPI {
     public List<CommentWithThread> getLatestComment(TimestampKeyset keyset) {
         return commentService.getCommentDAO().getLatestComments(keyset);
     }
-
 }

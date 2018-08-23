@@ -56,6 +56,7 @@ public class CommentDAO {
         return map;
     }
 
+
     public List<CommentWithThread> getLatestComments(TimestampKeyset timestampKeyset) {
         if (timestampKeyset == null) timestampKeyset = TimestampKeyset.getDefault();
         TimestampKeyset.CondtionAndOrder seek = timestampKeyset.seek(comment.UPDATED_TIME);

@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.out;
 
 @Service
 @Transactional
@@ -27,13 +26,10 @@ public class PageHitsDao {
     @Async
     public void increasePageHit(String ip) {
         var sequence = Sequences.SEQUENCE;
-        var now = currentTimeMillis();
         Field<Long> nextval = sequence.nextval();
         var next = context.select(nextval).fetchOne(nextval);
         context.insertInto(pageHits, pageHits.ID, pageHits.CREATED_TIME, pageHits.IP)
                 .values(next.intValue(), Timestamp.from(Instant.now()), ip).execute();
-        out.printf("increasePageHit in %s ns \n", currentTimeMillis() - now);
-        out.println("increasePageHit Thread: " + Thread.currentThread().getName());
     }
 
     @Transactional(readOnly = true)
@@ -43,9 +39,9 @@ public class PageHitsDao {
         var query = context.selectDistinct(pageHits.IP)
                 .from(pageHits)
                 .where(pageHits.CREATED_TIME.ge(now));
-        out.println("Get Users Online SQL " + query.getSQL());
+        log.debug("Get Users Online SQL " + query.getSQL());
         int execute = query.execute();
-        log.info(String.format("Users: %s in %s ns", execute, currentTimeMillis() - time1));
+        log.debug(String.format("Users: %s in %s ns", execute, currentTimeMillis() - time1));
         return execute;
     }
 }

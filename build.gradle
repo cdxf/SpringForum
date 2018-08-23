@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.0.BUILD-SNAPSHOT'
+        springBootVersion = '2.1.0.M1'
     }
     repositories {
         jcenter()
@@ -9,16 +9,15 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.postgresql:postgresql:42.2.4'
+      //  classpath 'org.postgresql:postgresql:42.2.4'
     }
 }
 plugins {
-    //  id "net.ltgt.apt" version "0.17"
-//    id "net.ltgt.apt-idea" version "0.17"
     id 'nu.studer.jooq' version '3.0.1'
     id 'io.franzbecker.gradle-lombok' version '1.14'
 }
 apply plugin: 'java'
+apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 group = 'com.example'
@@ -43,7 +42,7 @@ jooq {
                         value = 'src/main/resources/database.sql'
                     }
                 }
-                inputSchema = 'public'
+                inputSchema = 'PUBLIC'
                 outputSchema = ''
                 forcedTypes {
                     forcedType {

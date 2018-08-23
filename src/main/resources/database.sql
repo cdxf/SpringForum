@@ -12,7 +12,7 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
-CREATE TABLE "public"."avatar" (
+CREATE TABLE "avatar" (
     id integer NOT NULL,
     created_time timestamp without time zone,
     updated_time timestamp without time zone,
@@ -22,7 +22,7 @@ CREATE TABLE "public"."avatar" (
 
 
 
-CREATE TABLE "public"."comment" (
+CREATE TABLE "comment" (
     id integer NOT NULL,
     created_time timestamp without time zone,
     updated_time timestamp without time zone,
@@ -34,7 +34,7 @@ CREATE TABLE "public"."comment" (
 
 
 
-CREATE TABLE "public"."forum"(
+CREATE TABLE "forum"(
     id integer NOT NULL,
     created_time timestamp without time zone,
     updated_time timestamp without time zone,
@@ -49,7 +49,7 @@ CREATE TABLE "public"."forum"(
 
 
 
-CREATE TABLE "public"."page_hits" (
+CREATE TABLE "page_hits" (
     id integer NOT NULL,
     created_time timestamp without time zone,
     updated_time timestamp without time zone,
@@ -59,7 +59,7 @@ CREATE TABLE "public"."page_hits" (
 
 
 
-CREATE TABLE "public"."thread" (
+CREATE TABLE "thread" (
     id integer NOT NULL,
     created_time timestamp without time zone,
     updated_time timestamp without time zone,
@@ -76,7 +76,7 @@ CREATE TABLE "public"."thread" (
 
 
 
-CREATE TABLE "public"."user_activity" (
+CREATE TABLE "user_activity" (
     created_time timestamp without time zone,
     updated_time timestamp without time zone,
     last_thread_creation timestamp without time zone,
@@ -86,13 +86,13 @@ CREATE TABLE "public"."user_activity" (
 
 
 
-CREATE TABLE "public"."user_role" (
+CREATE TABLE "user_role" (
     user_id integer NOT NULL,
     role character varying(255)
 );
 
 
-CREATE TABLE "public"."users" (
+CREATE TABLE "users" (
     id integer NOT NULL,
     created_time timestamp without time zone,
     updated_time timestamp without time zone,
@@ -106,122 +106,122 @@ CREATE TABLE "public"."users" (
 
 
 
-CREATE SEQUENCE "public"."sequence";
+CREATE SEQUENCE "sequence";
 
 
-ALTER TABLE "public"."avatar"
+ALTER TABLE "avatar"
     ADD CONSTRAINT avatar_pkey PRIMARY KEY (id);
 
 
-ALTER TABLE "public"."comment"
+ALTER TABLE "comment"
     ADD CONSTRAINT comment_pkey PRIMARY KEY (id);
 
 
 
-ALTER TABLE "public"."forum"
+ALTER TABLE "forum"
     ADD CONSTRAINT forum_pkey PRIMARY KEY (id);
 
 
 
-ALTER TABLE "public"."page_hits"
+ALTER TABLE "page_hits"
     ADD CONSTRAINT page_hits_pkey PRIMARY KEY (id);
 
 
-ALTER TABLE "public"."thread"
+ALTER TABLE "thread"
     ADD CONSTRAINT thread_pkey PRIMARY KEY (id);
 
 
 
-ALTER TABLE "public"."users"
+ALTER TABLE "users"
     ADD CONSTRAINT uk_6dotkott2kjsp8vw4d0m25fb7 UNIQUE (email);
 
 
-ALTER TABLE "public"."users"
+ALTER TABLE "users"
     ADD CONSTRAINT uk_r43af9ap4edm43mmtq01oddj6 UNIQUE (username);
 
 
-ALTER TABLE "public"."users"
+ALTER TABLE "users"
     ADD CONSTRAINT uk_sx468g52bpetvlad2j9y0lptc UNIQUE (username);
 
 
 
-ALTER TABLE "public"."user_activity"
+ALTER TABLE "user_activity"
     ADD CONSTRAINT user_activity_pkey PRIMARY KEY (user_id);
 
 
-ALTER TABLE "public"."users"
+ALTER TABLE "users"
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 
-CREATE INDEX comment_author_id ON "public"."comment" (author_id);
+CREATE INDEX comment_author_id ON "comment" (author_id);
 
 
-CREATE INDEX comment_thread_id ON "public"."comment" (thread_id);
-
-
-
-CREATE INDEX createdtimeindex ON "public"."page_hits" (created_time);
-
-
-CREATE INDEX lastmodified ON "public"."thread" (last_modified);
-
-
-CREATE INDEX latestthreadindex ON "public"."forum" (latest_thread);
-
-
-CREATE INDEX random ON "public"."avatar" (random);
+CREATE INDEX comment_thread_id ON "comment" (thread_id);
 
 
 
-CREATE INDEX thread_author_id ON "public"."thread" (author_id);
+CREATE INDEX createdtimeindex ON "page_hits" (created_time);
 
 
-CREATE INDEX thread_forum_id ON "public"."thread" (forum_id);
+CREATE INDEX lastmodified ON "thread" (last_modified);
 
 
-
-ALTER TABLE "public"."users"
-    ADD CONSTRAINT fk5yr86wseqtg71i7w0un54mr9 FOREIGN KEY (avatar_id) REFERENCES "public"."avatar"(id);
+CREATE INDEX latestthreadindex ON "forum" (latest_thread);
 
 
-
-ALTER TABLE "public"."thread"
-    ADD CONSTRAINT fk91yd4uq5lexcwhhi1orfs7nn FOREIGN KEY (forum_id) REFERENCES "public"."forum"(id);
-
-
-ALTER TABLE "public"."thread"
-    ADD CONSTRAINT fkatqlyrrir5n0970ngtv2vy0qk FOREIGN KEY (last_reply_id) REFERENCES "public"."comment"(id);
+CREATE INDEX random ON "avatar" (random);
 
 
 
-ALTER TABLE "public"."forum"
-    ADD CONSTRAINT fkbfh0b305scq6mnvnhnfsk20fq FOREIGN KEY (parent_id) REFERENCES "public"."forum"(id);
+CREATE INDEX thread_author_id ON "thread" (author_id);
+
+
+CREATE INDEX thread_forum_id ON "thread" (forum_id);
 
 
 
-ALTER TABLE "public"."comment"
-    ADD CONSTRAINT fkehf7mvstlwwl8fy9ahfo515rm FOREIGN KEY (thread_id) REFERENCES "public"."thread"(id);
-
-
-ALTER TABLE "public"."comment"
-    ADD CONSTRAINT fkir20vhrx08eh4itgpbfxip0s1 FOREIGN KEY (author_id) REFERENCES "public"."users"(id);
+ALTER TABLE "users"
+    ADD CONSTRAINT fk5yr86wseqtg71i7w0un54mr9 FOREIGN KEY (avatar_id) REFERENCES "avatar"(id);
 
 
 
-ALTER TABLE "public"."forum"
-    ADD CONSTRAINT fkivi7mwasgbs9qb19r1oe337wx FOREIGN KEY (latest_thread) REFERENCES "public"."thread"(id);
+ALTER TABLE "thread"
+    ADD CONSTRAINT fk91yd4uq5lexcwhhi1orfs7nn FOREIGN KEY (forum_id) REFERENCES "forum"(id);
+
+
+ALTER TABLE "thread"
+    ADD CONSTRAINT fkatqlyrrir5n0970ngtv2vy0qk FOREIGN KEY (last_reply_id) REFERENCES "comment"(id);
 
 
 
-ALTER TABLE "public"."user_role"
-    ADD CONSTRAINT fkj345gk1bovqvfame88rcx7yyx FOREIGN KEY (user_id) REFERENCES "public"."users"(id);
+ALTER TABLE "forum"
+    ADD CONSTRAINT fkbfh0b305scq6mnvnhnfsk20fq FOREIGN KEY (parent_id) REFERENCES "forum"(id);
 
 
 
-ALTER TABLE "public"."user_activity"
-    ADD CONSTRAINT fks41is1raa3f0y5q5g0pw2rfd4 FOREIGN KEY (user_id) REFERENCES "public"."users"(id);
+ALTER TABLE "comment"
+    ADD CONSTRAINT fkehf7mvstlwwl8fy9ahfo515rm FOREIGN KEY (thread_id) REFERENCES "thread"(id);
 
 
-ALTER TABLE "public"."thread"
-    ADD CONSTRAINT fksoku9fxjl3uunwb3wdwkegv43 FOREIGN KEY (author_id) REFERENCES "public"."users"(id);
+ALTER TABLE "comment"
+    ADD CONSTRAINT fkir20vhrx08eh4itgpbfxip0s1 FOREIGN KEY (author_id) REFERENCES "users"(id);
+
+
+
+ALTER TABLE "forum"
+    ADD CONSTRAINT fkivi7mwasgbs9qb19r1oe337wx FOREIGN KEY (latest_thread) REFERENCES "thread"(id);
+
+
+
+ALTER TABLE "user_role"
+    ADD CONSTRAINT fkj345gk1bovqvfame88rcx7yyx FOREIGN KEY (user_id) REFERENCES "users"(id);
+
+
+
+ALTER TABLE "user_activity"
+    ADD CONSTRAINT fks41is1raa3f0y5q5g0pw2rfd4 FOREIGN KEY (user_id) REFERENCES "users"(id);
+
+
+ALTER TABLE "thread"
+    ADD CONSTRAINT fksoku9fxjl3uunwb3wdwkegv43 FOREIGN KEY (author_id) REFERENCES "users"(id);

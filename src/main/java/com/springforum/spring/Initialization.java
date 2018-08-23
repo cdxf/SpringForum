@@ -22,7 +22,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +59,14 @@ public class Initialization implements InitializingBean {
         FileSystemResource fileSystemResource = new FileSystemResource("avatar");
         // for classpth
         ClassPathResource classPathResource = new ClassPathResource("avatar");
-        var files = ArrayUtils.addAll(classPathResource.getFile().listFiles(), fileSystemResource.getFile().listFiles());
+        File[] classPath_File;
+        try {
+            classPath_File = classPathResource.getFile().listFiles();
+        } catch (IOException e) {
+            classPath_File = new File[0];
+        }
+
+        var files = ArrayUtils.addAll(classPath_File, fileSystemResource.getFile().listFiles());
         List<Integer> avatars = new ArrayList<>();
         if (files.length == 0) throw new IllegalArgumentException("Can't found the avatar");
         for (var file : files) {

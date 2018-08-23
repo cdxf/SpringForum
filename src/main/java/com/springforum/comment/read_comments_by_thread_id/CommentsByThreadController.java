@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -20,5 +21,10 @@ public class CommentsByThreadController {
     @GetMapping("api/threads/{thread}/comments")
     public List<SimpleComment> getCommentsByThreadId(@PathVariable(value = "thread") Integer thread, TimestampKeyset keyset) throws Exception {
         return dao.get(thread, keyset);
+    }
+
+    @GetMapping(value = "api/threads/{thread}/comments/range")
+    public List<Instant> get(@PathVariable(value = "thread") Integer thread) {
+        return dao.getRange(thread);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.util.List;
 
 
@@ -19,6 +20,11 @@ public class GetLatestThreadController {
     @GetMapping(value = "threads")
     public List<ThreadDTO> get(TimestampKeyset epoch) {
         return getLatestThreadDao.query(epoch);
+    }
+
+    @GetMapping(value = "threads/range")
+    public List<Instant> get() {
+        return getLatestThreadDao.getRange();
     }
 
 }

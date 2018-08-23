@@ -30,7 +30,9 @@ public class StatsFilter implements Filter {
             var request = ((HttpServletRequest) req);
             if (request.getRequestURI().contains("favicon")) return;
             time = System.currentTimeMillis() - time;
-            LOGGER.info("{}: {} ms ", request.getRequestURI(), time);
+            if (time > 100) {
+                LOGGER.warn("A slow request detected: {}: {} ms ", request.getRequestURI(), time);
+            } else LOGGER.debug("{}: {} ms ", request.getRequestURI(), time);
         }
     }
 

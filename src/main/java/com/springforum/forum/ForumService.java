@@ -18,15 +18,10 @@ import java.util.List;
 public class ForumService {
     @Autowired
     ForumDao forumDao;
-
     public List<ForumDTO> getForums() {
         return forumDao.getAllForum();
     }
-
-
     public ForumDTO getForumDTO(Integer forumID) {
         return forumDao.getForumById(forumID);
     }
-
-
 }

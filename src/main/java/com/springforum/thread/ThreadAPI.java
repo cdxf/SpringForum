@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -22,6 +23,11 @@ public class ThreadAPI {
     @GetMapping(value = "forums/{forum}/threads")
     public List<ThreadDTO> threads(@PathVariable("forum") Integer forum, TimestampKeyset keyset) {
         return threadReadService.getThreadsByForum(forum, keyset);
+    }
+
+    @GetMapping(value = "forums/{forum}/threads/range")
+    public List<Instant> threadsRange(@PathVariable(value = "forum") Integer forum) {
+        return threadReadService.getRange(forum);
     }
 
     @GetMapping(value = "threads/{id}")

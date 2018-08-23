@@ -3,7 +3,6 @@ package com.springforum;
 import com.springforum.generic.TimestampKeyset;
 import com.springforum.thread.create_new_thread.CreateThreadService;
 import com.springforum.thread.get_latest_thread.GetLatestThreadDao;
-import com.springforum.user.User;
 import com.springforum.user.UserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -48,14 +46,6 @@ public class ThreadWriteServiceTest {
         createThreadService.newThread("Hello World", "Hello World", 1, null);
     }
 
-    @Test
-    @WithUserDetails(value = "snoob")
-    public void addThreadNormalUser() {
-        Page<User> topUsers = userService.getTopUsers();
-        Integer user_id = topUsers.getContent().get(0).getId();
-        Integer id = latestThreadDao.query(null).get(0).getForum().getId();
-        createThreadService.newThread("Hello World", "Test", id, user_id);
-    }
 
     @Test
     public void testLastestThread() {

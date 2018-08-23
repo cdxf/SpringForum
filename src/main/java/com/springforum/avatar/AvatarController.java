@@ -2,6 +2,8 @@ package com.springforum.avatar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,8 +24,12 @@ public class AvatarController {
         return avatarService.getRandomAvatarID();
     }
 
-    @GetMapping(value = "/api/avatars/{id}", consumes = "*/*", produces = "image/*")
-    public Resource getAvatar(@PathVariable(value = "id") Integer avatar_id) throws Exception {
-        return avatarService.getAvatar(avatar_id);
+    @GetMapping(value = "/api/avatars/{id}")
+    public ResponseEntity<Resource> getAvatar(@PathVariable(value = "id") Integer avatar_id) throws Exception {
+        var headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "image/png");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(avatarService.getAvatar(avatar_id));
     }
 }
