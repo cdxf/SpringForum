@@ -9,6 +9,7 @@ import com.springforum.forum.create_new_forum.CreateForumService;
 import com.springforum.thread.ThreadWriteService;
 import com.springforum.thread.create_new_thread.CreateThreadService;
 import com.springforum.thread.dto.ThreadDTO;
+import com.springforum.thread.get_latest_thread.GetLatestThreadDao;
 import com.springforum.user.User;
 import com.springforum.user.UserService;
 import com.springforum.user.dto.UserRegister;
@@ -44,6 +45,7 @@ public class Initialization implements InitializingBean {
     CreateThreadService createThreadService;
     @Autowired
     CreateCommentService commentService;
+    @Autowired GetLatestThreadDao threadDao;
     @Autowired
     AvatarService avatarService;
     @Value("${springforum.sampleDB}")
@@ -54,6 +56,7 @@ public class Initialization implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         if (!sampleDB)
             return;
+        if (threadDao.query(null).size() > 10) return;
         //for jar file
         FileSystemResource fileSystemResource = new FileSystemResource("static/avatar");
         var files = fileSystemResource.getFile().listFiles();
