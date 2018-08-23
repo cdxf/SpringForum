@@ -15,6 +15,7 @@ import com.springforum.user.UserService;
 import com.springforum.user.dto.UserRegister;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jooq.DSLContext;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,6 +49,7 @@ public class Initialization implements InitializingBean {
     @Autowired GetLatestThreadDao threadDao;
     @Autowired
     AvatarService avatarService;
+    @Autowired DSLContext dslContext;
     @Value("${springforum.sampleDB}")
     Boolean sampleDB;
     Random rand = new Random(System.currentTimeMillis());
@@ -85,6 +87,10 @@ public class Initialization implements InitializingBean {
                 log.error("Can't read avatar file");
             }
         }
+        var thread_fulltext_index = "create index if not exists thread_fulltext on thread using GIN (to_tsvector('english', title || ' ' || content))";
+        dslContext.query(thread_fulltext_index).executeAsync();
+        var comment_fulltext_index = "create index if not exists comment_fulltext_index on comment using GIN (to_tsvector('english', content))";
+        dslContext.query(comment_fulltext_index).executeAsync();
         var username = "Anonymous";
         try {
             User user = null;

@@ -48,13 +48,21 @@ public class SearchDAO {
 
         public List<ThreadDTO> search(String query) {
             var tsvector = " to_tsvector('english', title || ' ' || content) ";
+            var tsquery = " plainto_tsquery(?) ";
             query = query.trim();
             var order = DSL
-                    .field("ts_rank(" + tsvector + ", plainto_tsquery(?))", query).desc();
-            var sql = context.select().from(thread)
+                    .field("ts_rank(" + tsvector + ", " + tsquery + ")", query).desc();
+            var threadID = context
+                    .select(thread.ID)
+                    .from(thread)
+                    .where(tsvector + " @@ " + tsquery, query)
+                    .limit(100);
+            var sql = context
+                    .select()
+                    .from(thread)
                     .innerJoin(author).on(author.ID.eq(thread.AUTHOR_ID))
                     .innerJoin(forum).on(forum.ID.eq(thread.FORUM_ID))
-                    .where(tsvector + " @@ plainto_tsquery(?)", query)
+                    .where(thread.ID.in(threadID))
                     .orderBy(order)
                     .limit(10);
             System.out.println(sql.getSQL());
@@ -87,12 +95,22 @@ public class SearchDAO {
 
         public List<CommentWithThread> search(String query) {
             query = query.trim();
-            String where = "to_tsvector('english', " + comment.CONTENT.getQualifiedName().unquotedName() + ") @@ plainto_tsquery(?)";
+            String tsvector = "to_tsvector('english', " + comment.CONTENT.getQualifiedName().unquotedName() + ")";
+            String tsquery = "plainto_tsquery(?)";
+            String search = tsvector + " @@ " + tsquery;
+            var order = DSL
+                    .field("ts_rank(" + tsvector + ", " + tsquery + ")", query).desc();
+            var commentID = context
+                    .select(comment.ID)
+                    .from(comment)
+                    .where(search, query)
+                    .limit(300);
             return context.select().from(comment)
                     .innerJoin(author).on(author.ID.eq(comment.AUTHOR_ID))
                     .innerJoin(thread).on(thread.ID.eq(comment.THREAD_ID))
-                    .where(where, query)
-                    .limit(10)
+                    .where(comment.ID.in(commentID))
+                    .orderBy(order)
+                    .limit(20)
                     .fetch()
                     .map(it -> CommentWithThread.builder()
                             .id(it.get(comment.ID))
